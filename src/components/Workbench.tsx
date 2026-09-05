@@ -1,0 +1,9 @@
+import {useState} from 'react';
+import {motion,AnimatePresence} from 'motion/react';
+import {ScrollTrigger} from 'gsap/ScrollTrigger';
+import {modules,essay} from '../content';
+import {Chapter,Arrow,PrintProof,Reveal} from './Primitives';
+export default function Workbench({reduced,onRead}:{reduced:boolean;onRead:()=>void}){
+ const [open,setOpen]=useState<string|null>('Print');
+ return <section id="work" className="workbench section"><Chapter number="04">The workbench</Chapter><Reveal reduced={reduced}><h2>Make it work.<br/><em>Then make it matter.</em></h2></Reveal><div className="work-rows">{modules.map((m,i)=><article className={`work-row ${open===m.name?'open':''}`} key={m.name} id={m.name.toLowerCase()}><h3><button id={`trigger-${i}`} aria-expanded={open===m.name} aria-controls={`panel-${i}`} onClick={()=>setOpen(open===m.name?null:m.name)}><span className="row-number">0{i+1}</span><span>{m.name}</span><span className="row-type">{m.type}</span><Arrow/></button></h3><AnimatePresence initial={false}>{open===m.name&&<motion.div id={`panel-${i}`} role="region" aria-labelledby={`trigger-${i}`} initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}} exit={{height:0,opacity:0}} transition={{duration:reduced?0:.4}} onAnimationComplete={()=>ScrollTrigger.refresh()} className="work-detail"><div className="work-detail-inner">{m.name==='Print'?<PrintProof/>:<div className="module-visual" aria-hidden="true">{m.name==='Systems'?'[ input ] → [ output ]':m.name==='Automation'?'> if repeat: automate()':m.name==='Writing'?'A thought, held still.':m.name==='Experiments'?'what happens if…':'Aa / 01 / ↗'}</div>}<div><h4>{m.label}</h4><p>{m.text}</p>{m.name==='Writing'&&<button className="text-link" onClick={onRead}>Read “{essay.title}” <Arrow/></button>}{m.name==='Experiments'&&<a className="text-link" href="#compression">Explore the mind map <Arrow/></a>}</div></div></motion.div>}</AnimatePresence></article>)}</div></section>
+}
